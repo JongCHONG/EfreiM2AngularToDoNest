@@ -1,0 +1,94 @@
+<div
+  class="modal fade"
+  id="signupModal"
+  tabindex="-1"
+  aria-labelledby="signupModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="signupModalLabel">Inscription</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <form
+            (ngSubmit)="onSignUp()"
+            class="needs-validation"
+            novalidate
+            [formGroup]="signupForm"
+          >
+            <div class="form-floating mb-3">
+              <input
+                type="text"
+                class="form-control"
+                id="floatingSurname"
+                placeholder="Ex: John"
+                formControlName="surname"
+                name="surname"
+                required
+              />
+              <label for="floatingSurname">Prénom</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input
+                type="email"
+                class="form-control"
+                id="floatingEmail"
+                placeholder="name@example.com"
+                formControlName="email"
+                name="email"
+                required
+              />
+              <label for="floatingEmail">Email</label>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input
+                type="password"
+                class="form-control"
+                id="floatingPassword"
+                placeholder="Password"
+                formControlName="password"
+                name="password"
+                required
+              />
+              <label for="floatingPassword">Mot de passe</label>
+            </div>
+
+            <div class="form-floating">
+              <input
+                type="password"
+                class="form-control"
+                id="floatingConfirmPassword"
+                placeholder="Password"
+                formControlName="confirmPassword"
+                name="confirmPassword"
+                required
+              />
+              <label for="floatingConfirmPassword"
+                >Confirmer le mot de passe</label
+              >
+            </div>
+
+            <div class="d-flex justify-content-center">
+              <button type="submit" class="btn btn-primary btn-block mt-3">
+                S'inscrire
+              </button>
+            </div>
+          </form>
+          <p *ngIf="errorMessage" class="error text-danger mt-3">
+            {{ errorMessage }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
