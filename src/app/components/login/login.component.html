@@ -1,0 +1,100 @@
+<div
+  class="modal fade"
+  id="loginModal"
+  tabindex="-1"
+  aria-labelledby="loginModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="loginModalLabel">Connexion</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+          <form
+            (ngSubmit)="onLogin()"
+            class="needs-validation"
+            novalidate
+            [formGroup]="loginForm"
+          >
+            <div class="form-floating mb-3">
+              <input
+                type="email"
+                class="form-control"
+                id="floatingInput"
+                placeholder="name@example.com"
+                formControlName="email"
+                name="email"
+                required
+                [ngClass]="{
+                  'is-invalid':
+                    loginForm.get('email')?.invalid &&
+                    loginForm.get('email')?.touched,
+                  'is-valid':
+                    loginForm.get('email')?.valid &&
+                    loginForm.get('email')?.touched
+                }"
+              />
+              <label for="floatingInput">Email</label>
+              <div
+                *ngIf="
+                  loginForm.get('email')?.invalid &&
+                  loginForm.get('email')?.touched
+                "
+                class="invalid-feedback"
+              >
+                Veuillez entrer une adresse email valide.
+              </div>
+            </div>
+
+            <div class="form-floating mb-3">
+              <input
+                type="password"
+                class="form-control"
+                id="floatingLoginPassword"
+                placeholder="Password"
+                formControlName="password"
+                name="password"
+                required
+                [ngClass]="{
+                  'is-invalid':
+                    loginForm.get('password')?.invalid &&
+                    loginForm.get('password')?.touched,
+                  'is-valid':
+                    loginForm.get('password')?.valid &&
+                    loginForm.get('password')?.touched
+                }"
+              />
+              <label for="floatingLoginPassword">Mot de passe</label>
+              <div
+                *ngIf="
+                  loginForm.get('password')?.invalid &&
+                  loginForm.get('password')?.touched
+                "
+                class="invalid-feedback"
+              >
+                Veuillez entrer un mot de passe.
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-center">
+              <button type="submit" class="btn btn-primary btn-block mt-3">
+                Connexion
+              </button>
+            </div>
+          </form>
+          <p *ngIf="errorMessage" class="error text-danger mt-3">
+            {{ errorMessage }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
