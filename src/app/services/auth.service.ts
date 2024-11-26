@@ -7,7 +7,7 @@ import {
   signOut,
   User,
 } from '@angular/fire/auth';
-import { doc, Firestore, setDoc } from '@angular/fire/firestore';
+import { doc, Firestore, getDoc, setDoc } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 
@@ -16,14 +16,24 @@ import { BehaviorSubject } from 'rxjs';
 })
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
+  private currentUserNameSubject = new BehaviorSubject<string | null>(null);
 
   constructor(
     private auth: Auth,
     private firestore: Firestore,
     private router: Router
   ) {
-    onAuthStateChanged(this.auth, (user) => {
+    onAuthStateChanged(this.auth, async (user) => {
       this.currentUserSubject.next(user);
+      if (user) {
+        const userDoc = await getDoc(doc(this.firestore, 'users', user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          this.currentUserNameSubject.next(userData['surname']);
+        }
+      } else {
+        this.currentUserNameSubject.next(null);
+      }
     });
   }
 
@@ -59,7 +69,15 @@ export class AuthService {
   // Connexion
   async signIn(email: string, password: string): Promise<void> {
     try {
-      await signInWithEmailAndPassword(this.auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
+      const user = userCredential.user;
+
+      const userDoc = await getDoc(doc(this.firestore, 'users', user.uid));
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        this.currentUserNameSubject.next(userData['surname']);
+      }
+
       this.router.navigate(['/dashboard']);
     } catch (error) {
       console.error('Erreur lors de la connexion :', error);
@@ -81,5 +99,10 @@ export class AuthService {
   // Vérifier l'utilisateur connecté
   getCurrentUser() {
     return this.currentUserSubject.asObservable();
+  }
+
+  // Obtenir le nom de l'utilisateur connecté
+  getCurrentUserName() {
+    return this.currentUserNameSubject.asObservable();
   }
 }
