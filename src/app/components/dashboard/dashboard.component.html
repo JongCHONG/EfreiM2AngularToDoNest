@@ -27,11 +27,55 @@
   <div class="mt-4" style="width: 60%">
     <h3>Vos tâches</h3>
     <ul class="list-group">
-      <li *ngFor="let task of tasks" class="list-group-item d-flex justify-content-between align-items-center">
-        {{ task.title }}
-        <button class="btn btn-danger btn-sm" (click)="deleteTask(task.id!)">
-          <i class="fas fa-trash-alt"></i>
-        </button>
+      <li
+        *ngFor="let task of tasks"
+        class="list-group-item d-flex justify-content-between align-items-center"
+      >
+        <div
+          class="d-flex justify-content-between w-100"
+          *ngIf="editingTaskId === task.id; else viewMode"
+        >
+          <div>
+            <input
+              type="text"
+              class="form-control"
+              [formControl]="titleControl"
+            />
+          </div>
+          <div class="d-flex">
+            <button
+              class="btn btn-success btn-sm me-2"
+              style="padding: 0 9px"
+              (click)="saveTask(task)"
+            >
+              <i class="fas fa-save"></i>
+            </button>
+            <button
+              class="btn btn-secondary btn-sm"
+              style="padding: 0 9px"
+              (click)="cancelEdit()"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+        </div>
+        <ng-template #viewMode>
+          {{ task.title }}
+          <div>
+            <button
+              class="btn btn-warning btn-sm me-2"
+              (click)="editTask(task)"
+            >
+              <i class="fas fa-edit"></i>
+            </button>
+            <button
+              class="btn btn-danger btn-sm"
+              (click)="deleteTask(task.id!)"
+            >
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        </ng-template>
       </li>
     </ul>
   </div>

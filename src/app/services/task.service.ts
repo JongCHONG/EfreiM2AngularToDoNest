@@ -8,6 +8,7 @@ import {
   setDoc,
   doc,
   deleteDoc,
+  updateDoc,
 } from '@angular/fire/firestore';
 import { Task } from '../models/task.model';
 import { v4 as uuidv4 } from 'uuid';
@@ -63,5 +64,16 @@ export class TaskService {
 
     const taskDoc = doc(this.firestore, 'tasks', taskId);
     await deleteDoc(taskDoc);
+  }
+
+  async updateTask(task: Task) {
+    const user = this.auth.currentUser;
+    if (!user) {
+      throw new Error('User not authenticated');
+    }
+
+    const taskDoc = doc(this.firestore, 'tasks', task.id!);
+    task.updatedAt = new Date();
+    await updateDoc(taskDoc, { ...task });
   }
 }
