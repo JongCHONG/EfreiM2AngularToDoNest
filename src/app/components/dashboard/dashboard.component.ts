@@ -1,11 +1,6 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Task } from 'src/app/models/task.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { TaskService } from 'src/app/services/task.service';
@@ -14,16 +9,18 @@ import { TaskService } from 'src/app/services/task.service';
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
-  imports: [ReactiveFormsModule, CommonModule],
+  standalone: false,
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   taskForm: FormGroup;
   userName: string | null = null;
+  tasks: Task[] = [];
 
   constructor(
     private fb: FormBuilder,
+    private authService: AuthService,
     private taskService: TaskService,
-    private authService: AuthService
+    private router: Router
   ) {
     this.taskForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
@@ -31,31 +28,47 @@ export class DashboardComponent {
   }
 
   ngOnInit() {
-    this.authService.getCurrentUserName().subscribe(name => {
-      this.userName = name;
+    this.authService.getCurrentUser().subscribe((user) => {
+      if (user) {
+        this.authService.getCurrentUserName().subscribe((name) => {
+          this.userName = name;
+        });
+        this.loadTasks();
+      } else {
+        this.router.navigate(['/home']);
+      }
     });
   }
 
-  addTask() {
-    if (this.taskForm.valid) {
-      const task: Task = { title: this.taskForm.value.title, completed: false };
-      this.taskService
-        .addTask(task)
-        .then(() => {
-          console.log('Tâche ajoutée avec succès');
-          this.taskForm.reset();
-        })
-        .catch((error) => {
-          console.error("Erreur lors de l'ajout de la tâche :", error);
-        });
+  async loadTasks() {
+    try {
+      this.tasks = await this.taskService.getUserTasks();
+    } catch (error) {
+      console.error('Erreur lors du chargement des tâches :', error);
+    }
+  }
+
+  onTaskAdded() {
+    this.loadTasks();
+  }
+  
+  async deleteTask(taskId: string) {
+    try {
+      await this.taskService.deleteTask(taskId);
+      this.loadTasks();
+    } catch (error) {
+      console.error('Erreur lors de la suppression de la tâche :', error);
     }
   }
 
   logout() {
-    this.authService.signOut().then(() => {
-      console.log('Déconnexion réussie');
-    }).catch((error) => {
-      console.error('Erreur lors de la déconnexion :', error);
-    });
+    this.authService
+      .signOut()
+      .then(() => {
+        console.log('Déconnexion réussie');
+      })
+      .catch((error) => {
+        console.error('Erreur lors de la déconnexion :', error);
+      });
   }
 }

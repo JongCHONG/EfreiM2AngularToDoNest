@@ -14,9 +14,18 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { AddTaskComponent } from './components/add-task/add-task.component';
 
 @NgModule({
-  declarations: [AppComponent, HomeComponent, SignupComponent, LoginComponent],
+  declarations: [
+    AppComponent,
+    HomeComponent,
+    SignupComponent,
+    LoginComponent,
+    DashboardComponent,
+    AddTaskComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

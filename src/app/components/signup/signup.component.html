@@ -28,6 +28,14 @@
               <input
                 type="text"
                 class="form-control"
+                [ngClass]="{
+                  'is-invalid':
+                    signupForm.get('surname')?.invalid &&
+                    signupForm.get('surname')?.touched,
+                  'is-valid':
+                    signupForm.get('surname')?.valid &&
+                    signupForm.get('surname')?.touched
+                }"
                 id="floatingSurname"
                 placeholder="Ex: John"
                 formControlName="surname"
@@ -41,6 +49,14 @@
               <input
                 type="email"
                 class="form-control"
+                [ngClass]="{
+                  'is-invalid':
+                    signupForm.get('email')?.invalid &&
+                    signupForm.get('email')?.touched,
+                  'is-valid':
+                    signupForm.get('email')?.valid &&
+                    signupForm.get('email')?.touched
+                }"
                 id="floatingEmail"
                 placeholder="name@example.com"
                 formControlName="email"
@@ -54,6 +70,14 @@
               <input
                 type="password"
                 class="form-control"
+                [ngClass]="{
+                  'is-invalid':
+                    signupForm.get('password')?.invalid &&
+                    signupForm.get('password')?.touched,
+                  'is-valid':
+                    signupForm.get('password')?.valid &&
+                    signupForm.get('password')?.touched
+                }"
                 id="floatingPassword"
                 placeholder="Password"
                 formControlName="password"
@@ -67,6 +91,14 @@
               <input
                 type="password"
                 class="form-control"
+                [ngClass]="{
+                  'is-invalid':
+                    signupForm.get('confirmPassword')?.invalid &&
+                    signupForm.get('confirmPassword')?.touched,
+                  'is-valid':
+                    signupForm.get('confirmPassword')?.valid &&
+                    signupForm.get('confirmPassword')?.touched
+                }"
                 id="floatingConfirmPassword"
                 placeholder="Password"
                 formControlName="confirmPassword"

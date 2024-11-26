@@ -2,42 +2,37 @@
   class="d-flex justify-content-center flex-column align-items-center"
   style="height: 100vh"
 >
-<div class="d-flex justify-content-between"
-style="width: 60%;">
-  <h2 *ngIf="userName">Bienvenue, {{ userName }}!</h2>
-  <button (click)="logout()" class="btn btn-danger mt-3">Déconnexion</button>
-</div>
-  <form [formGroup]="taskForm" (ngSubmit)="addTask()" class="d-flex gap-3">
-    <div class="form-floating mb-3">
-      <input
-        type="text"
-        class="form-control"
-        id="taskName"
-        placeholder="Nom de la tâche"
-        formControlName="title"
-        required
-        [ngClass]="{
-          'is-invalid':
-            taskForm.get('title')?.invalid && taskForm.get('title')?.touched,
-          'is-valid':
-            taskForm.get('title')?.valid && taskForm.get('title')?.touched
-        }"
-      />
-      <label for="taskName">Nom de la tâche</label>
-      <div
-        *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched"
-        class="invalid-feedback"
+  <div
+    class="d-flex justify-content-between align-items-center"
+    style="width: 60%"
+  >
+    <h2 *ngIf="userName">Bienvenue, {{ userName }}!</h2>
+    <div>
+      <button
+        type="button"
+        class="btn btn-primary me-2"
+        data-bs-toggle="modal"
+        data-bs-target="#taskModal"
       >
-        <small *ngIf="taskForm.get('title')?.errors?.['required']"
-          >Le nom de la tâche est requis.</small
-        >
-        <small *ngIf="taskForm.get('title')?.errors?.['minlength']"
-          >Le nom de la tâche doit comporter au moins 3 caractères.</small
-        >
-      </div>
+        <i class="fas fa-plus"></i>
+      </button>
+      <button (click)="logout()" class="btn btn-danger">
+        <i class="fas fa-sign-out-alt"></i>
+      </button>
     </div>
-    <button type="submit" class="btn btn-primary" [disabled]="taskForm.invalid">
-      Ajouter
-    </button>
-  </form>
+  </div>
+
+  <app-add-task (taskAdded)="onTaskAdded()"></app-add-task>
+
+  <div class="mt-4" style="width: 60%">
+    <h3>Vos tâches</h3>
+    <ul class="list-group">
+      <li *ngFor="let task of tasks" class="list-group-item d-flex justify-content-between align-items-center">
+        {{ task.title }}
+        <button class="btn btn-danger btn-sm" (click)="deleteTask(task.id!)">
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </li>
+    </ul>
+  </div>
 </div>

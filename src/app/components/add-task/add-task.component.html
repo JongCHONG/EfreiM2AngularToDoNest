@@ -1,0 +1,40 @@
+<!-- src/app/add-task/add-task.component.html -->
+<div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="taskModalLabel">Ajouter une tâche</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="taskForm" (ngSubmit)="addTask()">
+          <div class="form-floating mb-3">
+            <input
+              type="text"
+              class="form-control"
+              id="taskName"
+              placeholder="Nom de la tâche"
+              formControlName="title"
+              required
+              [ngClass]="{
+                'is-invalid': taskForm.get('title')?.invalid && taskForm.get('title')?.touched,
+                'is-valid': taskForm.get('title')?.valid && taskForm.get('title')?.touched
+              }"
+            />
+            <label for="taskName">Nom de la tâche</label>
+            <div
+              *ngIf="taskForm.get('title')?.invalid && taskForm.get('title')?.touched"
+              class="invalid-feedback"
+            >
+              <small *ngIf="taskForm.get('title')?.errors?.['required']">Le nom de la tâche est requis.</small>
+              <small *ngIf="taskForm.get('title')?.errors?.['minlength']">Le nom de la tâche doit comporter au moins 3 caractères.</small>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary" [disabled]="taskForm.invalid">
+            Ajouter
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
