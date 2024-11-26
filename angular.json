@@ -63,10 +63,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "EfreiM2ToDoNest:build:production"
+              "buildTarget": "EfreiM2ToDoNest:build:production"
             },
             "development": {
-              "browserTarget": "EfreiM2ToDoNest:build:development"
+              "buildTarget": "EfreiM2ToDoNest:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -74,7 +74,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "EfreiM2ToDoNest:build"
+            "buildTarget": "EfreiM2ToDoNest:build"
           }
         },
         "test": {
