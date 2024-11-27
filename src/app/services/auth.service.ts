@@ -7,8 +7,19 @@ import {
   signOut,
   User,
 } from '@angular/fire/auth';
-import { doc, Firestore, getDoc, setDoc } from '@angular/fire/firestore';
+import {
+  collection,
+  doc,
+  Firestore,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  updateDoc,
+  where,
+} from '@angular/fire/firestore';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
@@ -21,7 +32,8 @@ export class AuthService {
   constructor(
     private auth: Auth,
     private firestore: Firestore,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {
     onAuthStateChanged(this.auth, async (user) => {
       this.currentUserSubject.next(user);
@@ -43,6 +55,7 @@ export class AuthService {
     email: string,
     password: string
   ): Promise<void> {
+    let userDoc;
     try {
       const userCredential = await createUserWithEmailAndPassword(
         this.auth,
@@ -56,6 +69,9 @@ export class AuthService {
         surname,
         email: user.email,
         uid: user.uid,
+        loginAttempts: 0,
+        isBlocked: false,
+        blockUntil: null,
         createdAt: new Date(),
       });
 
@@ -68,8 +84,42 @@ export class AuthService {
 
   // Connexion
   async signIn(email: string, password: string): Promise<void> {
+    const errorMessage =
+      "Votre compte est bloqué après trois tentatives infructueuses. Veuillez réessayer plus tard.'";
+    const usersCollection = collection(this.firestore, 'users');
+    const q = query(usersCollection, where('email', '==', email));
+    let userData: {
+      loginAttempts?: number;
+      isBlocked?: boolean;
+      blockUntil?: Date;
+    } = {};
+
+    const querySnapshot = await getDocs(q);
+    const userDoc = querySnapshot.docs[0];
+    if (!querySnapshot.empty) {
+      userData = userDoc.data();
+    }
+
+    if (userData.isBlocked && userData.blockUntil) {
+      const blockUntil = userData.blockUntil;
+      if (blockUntil > new Date()) {
+        this.toastr.error(errorMessage);
+        throw new Error(errorMessage);
+      } else {
+        await updateDoc(userDoc.ref, {
+          isBlocked: false,
+          blockUntil: null,
+          loginAttempts: 0,
+        });
+      }
+    }
+
     try {
-      const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(
+        this.auth,
+        email,
+        password
+      );
       const user = userCredential.user;
 
       const userDoc = await getDoc(doc(this.firestore, 'users', user.uid));
@@ -80,7 +130,24 @@ export class AuthService {
 
       this.router.navigate(['/dashboard']);
     } catch (error) {
-      console.error('Erreur lors de la connexion :', error);
+      if ((error as any).code === 'auth/invalid-login-credentials') {
+        const loginAttempts = userData['loginAttempts'] || 0;
+        await updateDoc(userDoc.ref, {
+          loginAttempts: loginAttempts + 1,
+        });
+
+        if (loginAttempts + 1 >= 3) {
+          const blockUntil = new Date();
+          if (loginAttempts < 3) {
+            blockUntil.setMinutes(blockUntil.getMinutes() + 1);
+          }
+          await updateDoc(userDoc.ref, {
+            isBlocked: true,
+            blockUntil,
+          });
+          this.toastr.error(errorMessage);
+        }
+      }
       throw error;
     }
   }
