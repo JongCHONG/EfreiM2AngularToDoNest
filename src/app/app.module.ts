@@ -37,11 +37,12 @@ import { ToastrModule } from 'ngx-toastr';
     CommonModule,
     BrowserAnimationsModule,
     ToastrModule.forRoot(), 
+  ],
+  providers: [
     provideFirebaseApp(() => initializeApp(env.firebase)),
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
   ],
-  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
