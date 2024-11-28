@@ -18,8 +18,8 @@ export class LoginComponent {
     private toastr: ToastrService
   ) {
     this.loginForm = this.formBuilder.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
+      email: ['jong@test.com', [Validators.required, Validators.email]],
+      password: ['azerty', [Validators.required, Validators.minLength(6)]],
     });
   }
 

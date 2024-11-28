@@ -1,5 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  FormControl,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { Task } from 'src/app/models/task.model';
 import { AuthService } from 'src/app/services/auth.service';
@@ -30,15 +35,11 @@ export class DashboardComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.authService.getCurrentUser().subscribe((user) => {
-      if (user) {
-        this.authService.getCurrentUserName().subscribe((name) => {
-          this.userName = name;
-        });
-        this.loadTasks();
-      } else {
-        this.router.navigate(['/home']);
-      }
+    this.authService.getCurrentUser().subscribe(() => {
+      this.authService.getCurrentUserName().subscribe((name) => {
+        this.userName = name;
+      });
+      this.loadTasks();
     });
   }
 

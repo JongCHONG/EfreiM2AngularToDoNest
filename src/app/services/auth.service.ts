@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import {
   Auth,
+  authState,
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -20,7 +21,7 @@ import {
 } from '@angular/fire/firestore';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -28,6 +29,7 @@ import { BehaviorSubject } from 'rxjs';
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private currentUserNameSubject = new BehaviorSubject<string | null>(null);
+  user$: Observable<User | null>;
 
   constructor(
     private auth: Auth,
@@ -35,6 +37,8 @@ export class AuthService {
     private router: Router,
     private toastr: ToastrService
   ) {
+    this.user$ = authState(this.auth) as Observable<User | null>;
+
     onAuthStateChanged(this.auth, async (user) => {
       this.currentUserSubject.next(user);
       if (user) {
@@ -55,7 +59,6 @@ export class AuthService {
     email: string,
     password: string
   ): Promise<void> {
-    let userDoc;
     try {
       const userCredential = await createUserWithEmailAndPassword(
         this.auth,
@@ -64,7 +67,6 @@ export class AuthService {
       );
       const user = userCredential.user;
 
-      // Save user information in Firestore
       await setDoc(doc(this.firestore, 'users', user.uid), {
         surname,
         email: user.email,
@@ -163,12 +165,10 @@ export class AuthService {
     }
   }
 
-  // Vérifier l'utilisateur connecté
-  getCurrentUser() {
-    return this.currentUserSubject.asObservable();
+  getCurrentUser(): Observable<User | null> {
+    return this.user$;
   }
 
-  // Obtenir le nom de l'utilisateur connecté
   getCurrentUserName() {
     return this.currentUserNameSubject.asObservable();
   }
