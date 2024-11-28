@@ -50,6 +50,7 @@ export class DashboardComponent implements OnInit {
   async loadTasks() {
     try {
       this.tasks = await this.taskService.getUserTasks();
+      this.sortTasks();
     } catch (error) {
       console.error('Erreur lors du chargement des tâches :', error);
     }
@@ -90,6 +91,25 @@ export class DashboardComponent implements OnInit {
 
   cancelEdit() {
     this.editingTaskId = null;
+  }
+
+  async toggleTaskCompletion(task: Task) {
+    task.completed = !task.completed;
+    try {
+      await this.taskService.updateTask(task);
+      this.loadTasks();
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de la tâche :', error);
+    }
+  }
+
+  sortTasks() {
+    this.tasks.sort((a, b) => {
+      if (a.completed === b.completed) {
+        return 0;
+      }
+      return a.completed ? 1 : -1;
+    });
   }
 
   logout() {
