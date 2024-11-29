@@ -1,39 +1,32 @@
-name: Deploy Angular to Firebase Hosting
+name: Build and Deploy
 
-# Triggers the workflow on push to the main branch
 on:
   push:
     branches:
       - main
 
 jobs:
-  build:
-    name: Build and Deploy
+  build-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code from GitHub
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Step 2: Set up Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: '18'
 
-      # Step 3: Install dependencies
+      - name: Clean workspace
+        run: |
+          rm -rf node_modules package-lock.json
+
       - name: Install dependencies
-        run: npm install
+        run: npm install --legacy-peer-deps
 
-      # Step 4: Build the Angular project
-      - name: Build Angular application
-        run: npm run build -- --prod
+      - name: Build project
+        run: npm run build
 
-      # Step 5: Deploy to Firebase Hosting
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@v2.0.0
-        with:
-          args: deploy --only hosting
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+      - name: Deploy
+        run: npm run deploy
