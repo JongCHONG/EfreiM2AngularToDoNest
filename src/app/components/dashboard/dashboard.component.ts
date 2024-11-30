@@ -6,6 +6,7 @@ import {
   FormControl,
 } from '@angular/forms';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { Task } from 'src/app/models/task.model';
 import { AuthService } from 'src/app/services/auth.service';
 import { TaskService } from 'src/app/services/task.service';
@@ -27,7 +28,8 @@ export class DashboardComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private taskService: TaskService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {
     this.taskForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
@@ -77,6 +79,11 @@ export class DashboardComponent implements OnInit {
   }
 
   async saveTask(task: Task) {
+    if (this.taskForm.invalid) {
+      this.toastr.error('Le titre doit contenir au moins 3 caractères', 'Fermer');
+      return;
+    }
+
     if (this.taskForm.valid) {
       task.title = this.taskForm.value.title;
       try {
